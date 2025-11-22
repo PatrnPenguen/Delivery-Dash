@@ -1,10 +1,37 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class Driver : MonoBehaviour
 {
-    [SerializeField] float steerSpeed = 350f;
-    [SerializeField] float moveSpeed = 15f;
+    [SerializeField] float steerSpeed = 300f;
+    [SerializeField] float currentSpeed = 10f;
+    [SerializeField] float boostSpeed = 15f;
+    [SerializeField] float regularSpeed = 10f;
+    [SerializeField] TMP_Text boostText;
+
+    void Start()
+    {
+        boostText.gameObject.SetActive(false);
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Boost"))
+        {
+            currentSpeed = boostSpeed;
+            Destroy(other.gameObject);
+            boostText.gameObject.SetActive(true);
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.collider.CompareTag("Collision Box"))
+        {
+            currentSpeed = regularSpeed; 
+            boostText.gameObject.SetActive(false); 
+        }
+    }
     
     // Update is called once per frame
     void Update()
@@ -28,7 +55,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
             steer = -1f;
         }
 
-        float moveAmount = move * moveSpeed * Time.deltaTime;
+        float moveAmount = move * currentSpeed * Time.deltaTime;
         float steerAmount = steer * steerSpeed * Time.deltaTime;
         
         transform.Translate(0, moveAmount, 0);
